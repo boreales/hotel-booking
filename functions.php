@@ -47,11 +47,6 @@ function calculateExtras($nights, $extras) {
 // Fonction pour calculer le prix final
 function calculateTotalPrice($roomType, $nights, $dayOfArrival, $extras, $season, $roomsRequested, $previousBookings, $roomAvailability) {
 
-    // Vérifier la disponibilité des chambres
-    if ($roomsRequested > $roomAvailability) {
-        return "Error: Only " . $roomAvailability . " rooms available.";
-    }
-
     $baseRoomPrice = getRoomPrice($roomType);
     $adjustedPrice = applySeasonalPrice($baseRoomPrice, $season);
     $basePrice = $adjustedPrice * $nights * $roomsRequested;

@@ -1,9 +1,7 @@
 <?php
 include 'header.php';
 $roomType = htmlspecialchars($_GET['type']);
-
 ?>
-
 
 <form method="post" action="addBooking.php">
     <div class="form-group">
@@ -47,5 +45,4 @@ $roomType = htmlspecialchars($_GET['type']);
 
 <?php
 include 'footer.php';
-
 ?>
