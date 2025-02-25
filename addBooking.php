@@ -31,12 +31,13 @@ if(isset($_POST['begin_date']) && isset($_POST['end_date']) && isset($_POST['roo
     $previousQuery = $db->prepare('SELECT * FROM booking WHERE user_id = :user_id');
     $previousQuery->bindParam('user_id', $userId);
     $previousQuery->execute();
-
     $previousBookings = $previousQuery->rowCount();
 
+    //Calcul du prix final
     $price = calculateTotalPrice($roomType, $nights, $beginDateObject->format('l'), [], $month, $nbRooms, $previousBookings, $available);
     $price = $price['finalPrice'];
 
+    //Insertion de la réservation
     $query = $db->prepare('INSERT INTO booking (begin_date, end_date, nb_rooms, user_id, price) VALUES (:beginDate, :endDate, :nbRooms, :userId, :price)');
     $query->bindParam('beginDate', $beginDate);
     $query->bindParam('endDate', $endDate);
@@ -45,7 +46,10 @@ if(isset($_POST['begin_date']) && isset($_POST['end_date']) && isset($_POST['roo
     $query->bindParam('price', $price);
     $query->execute();
 
+    //Récupération de l'id de la réservation
     $bookingId = $db->lastInsertId();
+
+    //Insertion des options supplémentaires de la réservation
     foreach ($extras as $extra) {
         $extra = htmlspecialchars($extra);
         $query = $db->query("SELECT * FROM opt_in WHERE name='$extra'");
@@ -59,7 +63,8 @@ if(isset($_POST['begin_date']) && isset($_POST['end_date']) && isset($_POST['roo
         $query->execute();
     }
 
-    $availableQuery = $db->query("UPDATE room SET available = available - $nbRooms WHERE type = '$roomType'");
+    $newAvailability = $available - $nbRooms;
+    $availableQuery = $db->query("UPDATE room SET available = ".$newAvailability." WHERE type = '$roomType'");
     $availableQuery->execute();
 
     header('Location: index.php');
